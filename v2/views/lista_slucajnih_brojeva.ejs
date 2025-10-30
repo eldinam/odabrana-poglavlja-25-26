@@ -16,12 +16,10 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Klikni <a href="/random">ovdje</a> da otvoriš rutu /random</p>
-    <p>Klikni <a href="http://localhost:3000/random/list">ovdje</a> da otvoriš rutu /random/list</p>
-  
-    <% rand_number = Math.ceil(Math.random() * 100) %>
-    <p>Klikni <a href="/random/<%= rand_number %>">ovdje</a> da otvoriš rutu /random/<%= rand_number %></p>
-  
-  
+    
+    <% list_random_numbers.forEach((number, index) => { %>
+        <h2> <%= number %> </h2>
+    <%})%>
+
   </body>
 </html>
