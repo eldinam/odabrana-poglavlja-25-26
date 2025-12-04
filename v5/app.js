@@ -9,6 +9,7 @@ const expressLayouts = require("express-ejs-layouts"); // ****************
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 const studentRouter = require("./routes/student"); // ***********************
+const subjectRouter = require("./routes/subject");
 
 var app = express();
 
@@ -25,6 +26,10 @@ app.use(
   "/bootstrap",
   express.static(path.join(__dirname, "node_modules/bootstrap/dist")) // ***********************
 );
+app.use(
+  "/jquery",
+  express.static(path.join(__dirname, "node_modules/jquery/dist"))
+);
 
 app.use(expressLayouts); // ***********************
 app.set("layout", "layout"); // ***********************
@@ -32,6 +37,7 @@ app.set("layout", "layout"); // ***********************
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/students", studentRouter); // ***********************
+app.use("/subjects", subjectRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

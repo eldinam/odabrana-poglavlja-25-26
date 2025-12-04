@@ -8,11 +8,23 @@
     <!-- Bootstrap CSS -->
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   </head>
+
   <body>
-    <!-- <h1 style="color: red;">LAYOUT TEST</h1> -->
-    <%- body %> <!-- Ovdje se ubacuje sadržaj svake EJS stranice -->
+    <%- body %>
+
+    <!-- jQuery (MORA biti prije Bootstrap JS-a ako ga koristiš) -->
+    <script src="/jquery/jquery.min.js"></script>
+
+    <script>
+      console.log("TEST → jQuery =", typeof $);
+      $(document).ready(function () {
+        console.log("TEST → jQuery radi! 🎉");
+      });
+    </script>
 
     <!-- Bootstrap JS -->
     <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+     <script src="/javascripts/subjects.js"></script>
   </body>
 </html>
