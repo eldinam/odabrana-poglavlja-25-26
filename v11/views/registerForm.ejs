@@ -1,0 +1,74 @@
+<h1 class="text-center mb-4"><%= title %></h1>
+
+<div class="container mt-4 p-4 border rounded bg-light">
+  <form id="registration_form">
+
+    <div class="form-group mb-3">
+      <label for="first_name">First name</label>
+      <input 
+        type="text" 
+        class="form-control" 
+        id="first_name" 
+        placeholder="Enter your first name" 
+        name="first_name"
+        required
+      >
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="last_name">Last name</label>
+      <input 
+        type="text" 
+        class="form-control" 
+        id="last_name" 
+        placeholder="Enter your last name" 
+        name="last_name"
+        required
+      >
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="email">Email</label>
+      <input 
+        type="email" 
+        class="form-control" 
+        id="email" 
+        placeholder="Enter your email" 
+        name="email"
+        required
+      >
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="password">Password</label>
+      <input 
+        type="password" 
+        class="form-control" 
+        id="password" 
+        placeholder="Create a password" 
+        name="password"
+        required
+      >
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="age">Age</label>
+      <input 
+        type="number" 
+        class="form-control" 
+        id="age" 
+        placeholder="Enter your age" 
+        name="age"
+        required
+      >
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Register</button>
+
+    <div class="text-center mt-3">
+      <p class="mb-0">Already have an account?</p>
+      <a href="/users/login" class="btn btn-link">Login here</a>
+    </div>
+
+  </form>
+</div>

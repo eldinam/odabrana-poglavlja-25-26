@@ -20,7 +20,7 @@ app.set("view engine", "ejs");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(cookieParser("gIE3huWaP6"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   "/bootstrap",
@@ -33,6 +33,35 @@ app.use(
 
 app.use(expressLayouts); // ***********************
 app.set("layout", "layout"); // ***********************
+
+app.use((req, res, next) => {
+  console.log("MIDDLEWARE:", req.path);
+
+  // Rute koje ne zahtijevaju login
+  const publicPaths = [
+    "/",
+    "/users/login",
+    "/users/login-user",
+    "/users/register",
+    "/users/register-user",
+  ];
+
+  if (publicPaths.includes(req.path)) {
+    return next();
+  }
+
+  // Čitanje SIGNED cookie-ja
+  const userCookie = req.signedCookies?.user;
+
+  if (!userCookie) {
+    return res.status(403).json({ status: 403, message: "Not authorized!" });
+  }
+
+  // Ako cookie postoji, postavi usera globalno
+  req.user = userCookie;
+
+  return next();
+});
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);

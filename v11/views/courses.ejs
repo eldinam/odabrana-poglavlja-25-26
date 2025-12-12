@@ -1,0 +1,222 @@
+<h1><%= title %></h1>
+
+<!-- Logout dugme, ako imaš -->
+<div class="d-flex justify-content-end mb-3">
+  <a href="/users/logout" class="btn btn-outline-danger">Logout</a>
+</div>
+
+<br>
+<button id="add_new_button" class="btn btn-success">+ Add new course</button>
+<br><br>
+
+<div class="container">
+  <table id="course_table" class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">ESPB</th>
+        <th scope="col">Semester</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% courseList.forEach((c) => { %>
+        <tr id="row_<%= c.id %>">
+          <th scope="row"><%= c.id %></th>
+          <td class="col-name"><%= c.name %></td>
+          <td class="col-espb"><%= c.espb %></td>
+          <td class="col-semester"><%= c.semester %></td>
+          <td>
+            <button class="btn btn-danger btn-sm" onclick="deleteCourse(<%= c.id %>)">Delete</button>
+            <button class="btn btn-info btn-sm" onclick="editCourse(<%= c.id %>)">Update</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Forma za create/update -->
+<div id="div_form" class="container mt-4 p-3 border rounded bg-light" style="display: none;">
+
+  <!-- Hidden ID - koristi se samo za update -->
+  <input type="hidden" id="form_course_id">
+
+  <form id="course_form" class="form-horizontal">
+    <div class="form-group mb-3">
+      <label for="name">Name:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Course name"
+        name="name"
+      >
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="espb">ESPB:</label>
+      <input
+        type="number"
+        class="form-control"
+        id="espb"
+        placeholder="ESPB points"
+        name="espb"
+      >
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="semester">Semester:</label>
+      <input
+        type="number"
+        class="form-control"
+        id="semester"
+        placeholder="Semester"
+        name="semester"
+      >
+    </div>
+
+    <div class="form-group mt-3">
+      <button id="submit_button" type="submit" class="btn btn-success">
+        Submit
+      </button>
+      <button type="button" id="cancel_button" class="btn btn-secondary ms-2">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- jQuery + AJAX logika -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  let isEditMode = false; // false = CREATE, true = UPDATE
+
+  $(function () {
+    // Show form for new course
+    $("#add_new_button").on("click", function () {
+      isEditMode = false;
+      $("#form_course_id").val("");
+      $("#name").val("");
+      $("#espb").val("");
+      $("#semester").val("");
+      $("#div_form").show();
+    });
+
+    // Cancel button
+    $("#cancel_button").on("click", function () {
+      $("#div_form").hide();
+    });
+
+    // Submit form (create or update) preko AJAX-a
+    $("#course_form").on("submit", function (e) {
+      e.preventDefault();
+
+      const id = $("#form_course_id").val();
+      const data = {
+        name: $("#name").val(),
+        espb: $("#espb").val(),
+        semester: $("#semester").val()
+      };
+
+      if (!data.name || !data.espb || !data.semester) {
+        alert("All fields are required!");
+        return;
+      }
+
+      if (!isEditMode) {
+        // CREATE
+        $.ajax({
+          url: "/courses/api",
+          method: "POST",
+          data: data,
+          success: function (res) {
+            const c = res.course;
+            addCourseRow(c);
+            $("#div_form").hide();
+          },
+          error: function (xhr) {
+            alert("Error creating course: " + xhr.responseText);
+          }
+        });
+      } else {
+        // UPDATE
+        $.ajax({
+          url: "/courses/api/" + id,
+          method: "PUT",
+          data: data,
+          success: function (res) {
+            const c = res.course;
+            updateCourseRow(c);
+            $("#div_form").hide();
+          },
+          error: function (xhr) {
+            alert("Error updating course: " + xhr.responseText);
+          }
+        });
+      }
+    });
+  });
+
+  // DELETE course
+  function deleteCourse(id) {
+    if (!confirm("Are you sure you want to delete this course?")) return;
+
+    $.ajax({
+      url: "/courses/api/" + id,
+      method: "DELETE",
+      success: function (res) {
+        $("#row_" + id).remove();
+      },
+      error: function (xhr) {
+        alert("Error deleting course: " + xhr.responseText);
+      }
+    });
+  }
+
+  // EDIT course - dohvatimo podatke, popunimo formu
+  function editCourse(id) {
+    $.ajax({
+      url: "/courses/api/" + id,
+      method: "GET",
+      success: function (c) {
+        isEditMode = true;
+        $("#form_course_id").val(c.id);
+        $("#name").val(c.name);
+        $("#espb").val(c.espb);
+        $("#semester").val(c.semester);
+        $("#div_form").show();
+      },
+      error: function (xhr) {
+        alert("Error loading course: " + xhr.responseText);
+      }
+    });
+  }
+
+  // DOM helperi:
+
+  function addCourseRow(c) {
+    const rowHtml = `
+      <tr id="row_${c.id}">
+        <th scope="row">${c.id}</th>
+        <td class="col-name">${c.name}</td>
+        <td class="col-espb">${c.espb}</td>
+        <td class="col-semester">${c.semester}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" onclick="deleteCourse(${c.id})">Delete</button>
+          <button class="btn btn-info btn-sm" onclick="editCourse(${c.id})">Update</button>
+        </td>
+      </tr>
+    `;
+    $("#course_table tbody").append(rowHtml);
+  }
+
+  function updateCourseRow(c) {
+    const row = $("#row_" + c.id);
+    row.find(".col-name").text(c.name);
+    row.find(".col-espb").text(c.espb);
+    row.find(".col-semester").text(c.semester);
+  }
+</script>
