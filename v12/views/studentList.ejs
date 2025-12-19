@@ -1,0 +1,59 @@
+<h1><%= title %></h1>
+
+<button class="btn btn-success" onclick="showForm()">New student</button>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">ID</th>
+      <th scope="col">Name</th>
+      <th scope="col">Age</th>
+      <th scope="col">Indeks</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% studentList.forEach((student, index) => { %>
+      <tr>
+        <th scope="row"><%= index + 1 %></th>
+        <td><%= student.id %></td>
+        <td><%= student.name %></td>
+        <td><%= student.age %></td>
+        <td><%= student.index_number %></td>
+        <td>
+          <button class="btn btn-danger" onclick="removeStudent(<%= student.id %>)">Delete</button>
+          <button class="btn btn-primary" onclick=" updateStudent(<%= student.id %>)">Edit</button>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+
+<script>
+  function removeStudent(id) {
+    fetch(`/students/${id}`, {
+      method: "DELETE",
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Delete failed");
+        return res.json();
+      })
+      .then(() => {
+        window.location.reload();
+      })
+      .catch(err => {
+        alert("Greška pri brisanju");
+        console.error(err);
+      });
+  }
+
+  function updateStudent(id) {
+    window.location =  `/students/update/${id}`
+  }
+
+  function showForm(id) {
+    window.location =  `/students/new`
+  }
+</script>

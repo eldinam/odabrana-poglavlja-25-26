@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= typeof title !== "undefined" ? title : "My App" %></title>
+
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <%- body %>
+
+    <!-- jQuery -->
+    <script src="/jquery/jquery.min.js"></script>
+
+    <script>
+      console.log("TEST → jQuery =", typeof $);
+      $(document).ready(function () {
+        console.log("TEST → jQuery radi! 🎉");
+      });
+    </script>
+
+    <!-- Bootstrap -->
+    <script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- App scripts -->
+    <script src="/javascripts/subjects.js"></script>
+    <script src="/javascripts/users.js"></script>
+
+    <!-- SOCKET.IO CLIENT -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      console.log("io =", typeof io);
+
+      const socket = io();
+
+      // userId dolazi iz backend-a (sigurno)
+      const USER_ID = <%- JSON.stringify(user ? user.id : null) %>;
+
+      socket.on("connect", () => {
+        console.log("SOCKET CONNECTED, ID:", socket.id);
+
+        if (USER_ID) {
+          socket.emit("register_user", USER_ID);
+          console.log("User registered on socket:", USER_ID);
+        }
+      });
+
+      socket.on("receive_notification", (data) => {
+        alert(data.message);
+      });
+    </script>
+  </body>
+</html>
